@@ -1,0 +1,45 @@
+name: Python Application CI
+
+# מתי להריץ את האוטומציה? בכל Push או Pull Request לענף הראשי (main)
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. משיכת הקוד שלך מהמאגר לשרת של גיטהאב
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # 2. התקנת פייתון על השרת המרוחק
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11' # גרסה יציבה וסטנדרטית לשרתי CI
+
+    # 3. התקנת כל הספריות הדרושות לפרויקט ולבדיקות
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flask pytest requests selenium
+
+    # 4. הכנת מסד הנתונים (הרצת ה-init_db כדי לייצר את הטבלאות)
+    - name: Initialize Database
+      run: |
+        python -c "from app.db.database import init_db; init_db()"
+
+    # 5. הפעלת שרת ה-Flask ברקע (כדי שטסטי ה-API וה-UI יוכלו לגשת אליו!)
+    - name: Start Flask Server
+      run: |
+        python run.py &
+        sleep 3 # נותן לשרת 3 שניות לעלות בצורה מלאה לפני שהטסטים מתחילים
+
+    # 6. הרצת הבדיקות המודולריות שלך!
+    - name: Run Tests with Pytest
+      run: |
+        python -m pytest -v

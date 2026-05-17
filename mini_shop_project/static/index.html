@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Shop - Sandbox PlayGround ל-QA</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🛍️ Mini Shop - פרויקט תרגול למפתח / אנליסט QA</h1>
+            <p class="subtitle">מערכת חנות מבוססת Flask + SQLite לבדיקות ידניות ואוטומציה</p>
+        </header>
+        
+        <div class="main-layout">
+            <div class="section products-section">
+                <h2>📦 קטלוג מוצרים זמינים</h2>
+                <div id="products-list" class="grid-container">טוען נתונים מהשרת...</div>
+            </div>
+
+            <div class="section cart-section">
+                <h2>🛒 עגלת קניות נוכחית</h2>
+                <div class="cart-box">
+                    <ul id="cart-list" class="cart-items">
+                        <li class="empty-msg">העגלה שלך ריקה לחלוטין</li>
+                    </ul>
+                    <hr>
+                    <div class="cart-summary">
+                        <p><strong>לתשלום סופי:</strong> <span id="cart-total" class="price-tag">0.00</span> ₪</p>
+                        <!-- 🐛 INTENTIONAL BUG 3: The button triggers clearCart() locally without calling the checkout POST API! -->
+                        <button id="checkout-btn" class="btn btn-primary" onclick="clearCart()">💰 בצע רכישה קבועה</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>פותח כפרויקט תשתית לראיונות עבודה ובדיקות אוטומטיות (UI / API / DB).</p>
+        </footer>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

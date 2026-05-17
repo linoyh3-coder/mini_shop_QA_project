@@ -1,0 +1,150 @@
+:root {
+    --primary-color: #2c3e50;
+    --accent-color: #27ae60;
+    --bg-color: #f8f9fa;
+    --card-bg: #ffffff;
+    --text-color: #333333;
+    --border-color: #e2e8f0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 20px;
+    direction: rtl;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 3px solid var(--primary-color);
+}
+
+header h1 {
+    color: var(--primary-color);
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    color: #7f8c8d;
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.main-layout {
+    display: block;
+}
+
+.section {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    margin-bottom: 25px;
+}
+
+h2 {
+    color: var(--primary-color);
+    margin-top: 0;
+    border-right: 4px solid var(--primary-color);
+    padding-right: 10px;
+}
+
+.product-card {
+    border: 1px solid var(--border-color);
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 6px;
+    background: #fafafa;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.product-info strong {
+    font-size: 1.2rem;
+    display: block;
+}
+
+.product-info small {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.95rem;
+    transition: background 0.2s;
+}
+
+.btn-success {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #219653;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+    width: 100%;
+    font-size: 1.1rem;
+    padding: 12px;
+}
+
+.btn-primary:hover {
+    background-color: #1a252f;
+}
+
+.cart-box {
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 15px;
+    background: #fff;
+}
+
+.cart-items {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.cart-items li {
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--border-color);
+    display: flex;
+    justify-content: space-between;
+}
+
+.empty-msg {
+    color: #95a5a6;
+    text-align: center;
+    font-style: italic;
+}
+
+.price-tag {
+    font-size: 1.4rem;
+    color: #c0392b;
+    font-weight: bold;
+}
+
+footer {
+    text-align: center;
+    margin-top: 5px;
+    color: #95a5a6;
+    font-size: 0.9rem;
+}
