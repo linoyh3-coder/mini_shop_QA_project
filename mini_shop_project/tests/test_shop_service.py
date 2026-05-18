@@ -1,7 +1,8 @@
 from unittest import TestCase
 from unittest.mock import patch, Mock
 
-import app.services
+import app.services.shop_service
+from app.services.shop_service import ShopService
 
 class TestShopService(TestCase):
 
@@ -9,7 +10,6 @@ class TestShopService(TestCase):
 
     @patch("app.services.shop_service.get_db_connection")
     def test_get_all_products_positive(self, mock_get_db_connection: Mock):
-
         # Arrange
         mock_conn = Mock()
 
@@ -21,7 +21,7 @@ class TestShopService(TestCase):
         mock_get_db_connection.return_value = mock_conn
 
         # Act
-        result = app.services.shop_service.ShopService.get_all_products()
+        result = ShopService.get_all_products()
 
         # Assert
         self.assertEqual(2, len(result))
@@ -35,24 +35,22 @@ class TestShopService(TestCase):
 
     # ============== Checkout - Positive Tests ============== #
 
-    @patch("app.shop_service.get_db_connection")
+    @patch("app.services.shop_service.get_db_connection")
     def test_process_checkout_positive(self, mock_get_db_connection: Mock):
-
         # Arrange
         mock_conn = Mock()
         mock_cursor = Mock()
 
         mock_conn.cursor.return_value = mock_cursor
+        mock_get_db_connection.return_value = mock_conn
 
-        # מוצר שקיים במלאי
+        # מוצר שמוחזר מה-DB
         mock_cursor.execute.return_value.fetchone.return_value = {
             'id': 1,
             'name': 'Laptop',
             'price': 3000,
             'stock': 10
         }
-
-        mock_get_db_connection.return_value = mock_conn
 
         cart = [
             {'id': 1, 'quantity': 2}
@@ -62,18 +60,17 @@ class TestShopService(TestCase):
         result = ShopService.process_checkout(cart)
 
         # Assert
-        self.assertEqual("success", result['status'])
-        self.assertEqual(6000, result['total_paid'])
+        assert result["status"] == "success"
+        assert result["total_paid"] == 6000
 
         # Validation
-        self.assertEqual(2, mock_cursor.execute.call_count)
+        assert mock_cursor.execute.call_count == 2
         mock_conn.commit.assert_called_once()
         mock_conn.close.assert_called_once()
 
-
     # ============== Checkout - Multiple Products ============== #
 
-    @patch("app.shop_service.get_db_connection")
+    @patch("app.services.shop_service.get_db_connection")
     def test_process_checkout_multiple_products(self, mock_get_db_connection: Mock):
 
         # Arrange
@@ -110,7 +107,7 @@ class TestShopService(TestCase):
 
     # ============== Checkout - Product Not Found ============== #
 
-    @patch("app.shop_service.get_db_connection")
+    @patch("app.services.shop_service.get_db_connection")
     def test_process_checkout_product_not_found(self, mock_get_db_connection: Mock):
 
         # Arrange
@@ -141,7 +138,7 @@ class TestShopService(TestCase):
 
     # ============== Checkout - Boundary Tests ============== #
 
-    @patch("app.shop_service.get_db_connection")
+    @patch("app.services.shop_service.get_db_connection")
     def test_process_checkout_different_quantities(self, mock_get_db_connection: Mock):
 
         # Arrange
@@ -178,7 +175,7 @@ class TestShopService(TestCase):
 
     # ============== Checkout - Negative Stock Bug Test ============== #
 
-    @patch("app.shop_service.get_db_connection")
+    @patch("app.services.shop_service.get_db_connection")
     def test_process_checkout_negative_stock_bug(self, mock_get_db_connection: Mock):
 
         """
@@ -226,7 +223,7 @@ class TestShopService(TestCase):
 
     # ============== Checkout - Empty Cart ============== #
 
-    @patch("app.shop_service.get_db_connection")
+    @patch("app.services.shop_service.get_db_connection")
     def test_process_checkout_empty_cart(self, mock_get_db_connection: Mock):
 
         # Arrange
