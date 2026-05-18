@@ -1,14 +1,13 @@
 from unittest import TestCase
 from unittest.mock import patch, Mock
 
-from app.shop_service import ShopService
-
+import app.services
 
 class TestShopService(TestCase):
 
     # ============== Get All Products - Positive Tests ============== #
 
-    @patch("app.shop_service.get_db_connection")
+    @patch("app.services.shop_service.get_db_connection")
     def test_get_all_products_positive(self, mock_get_db_connection: Mock):
 
         # Arrange
@@ -22,7 +21,7 @@ class TestShopService(TestCase):
         mock_get_db_connection.return_value = mock_conn
 
         # Act
-        result = ShopService.get_all_products()
+        result = app.services.shop_service.ShopService.get_all_products()
 
         # Assert
         self.assertEqual(2, len(result))
