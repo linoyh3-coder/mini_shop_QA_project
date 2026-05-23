@@ -33,6 +33,60 @@ class TestShopService(TestCase):
         mock_conn.close.assert_called_once()
 
 
+    @patch("app.services.shop_service.get_db_connection")
+    def test_get_all_products_empty_list(self, mock_get_db_connection: Mock):
+
+        mock_conn = Mock()
+
+        mock_conn.execute.return_value.fetchall.return_value =  []
+
+        mock_get_db_connection.return_value = mock_conn
+
+        result = ShopService.get_all_products()
+
+        self.assertEqual([], result)
+
+        mock_conn.execute.assert_called_once_with("SELECT * FROM products")
+        mock_conn.close.assert_called_once()
+
+
+    @patch("app.services.shop_service.get_db_connection")
+    def test_get_all_products_returns_dicts(self, mock_get_db_connection: Mock):
+        mock_conn = Mock()
+
+        mock_products = [
+            {'id': 1, 'name': 'keyboard', 'price': 200, 'stock': 10}
+        ]
+
+        mock_conn.execute.return_value.fetchall.return_value = mock_products
+        mock_get_db_connection.return_value = mock_conn
+
+        result = ShopService.get_all_products()
+
+        self.assertIsInstance(result, list)
+        self.assertIsInstance(result[0], dict)
+
+        mock_conn.execute.assert_called_once()
+
+
+    # ============== Get All Products - Negative Tests ============== #
+
+    @patch("app.services.shop_service.get_db_connection")
+    def test_get_all_products_closes_connection_on_exception(self, mock_get_db_connection: Mock):
+
+        mock_conn = Mock()
+
+        mock_conn.execute.side_effect = Exception("data base error!")
+
+        mock_get_db_connection.return_value = mock_conn
+
+        with self.assertRaises(Exception):
+            ShopService.get_all_products()
+
+        mock_conn.close.assert_called_once()
+
+
+
     # ============== Checkout - Positive Tests ============== #
 
     @patch("app.services.shop_service.get_db_connection")
