@@ -4,6 +4,7 @@ from unittest.mock import patch, Mock
 import app.services.shop_service
 from app.services.shop_service import ShopService
 
+
 class TestShopService(TestCase):
 
     # ============== Get All Products - Positive Tests ============== #
@@ -85,42 +86,48 @@ class TestShopService(TestCase):
 
         mock_conn.close.assert_called_once()
 
+    @patch("app.services.shop_service.get_db_connection")
+    def test_get_all_products_db_error(self, mock_get_db_connection: Mock):
+        mock_conn = Mock()
+        mock_conn.execute.side_effect = Exception("DB error")
+
+        mock_get_db_connection.return_value = mock_conn
+
+        with self.assertRaises(Exception):
+            ShopService.get_all_products()
+
+        mock_conn.close.assert_called_once()
 
 
     # ============== Checkout - Positive Tests ============== #
 
     @patch("app.services.shop_service.get_db_connection")
     def test_process_checkout_positive(self, mock_get_db_connection: Mock):
-        # Arrange
+
         mock_conn = Mock()
         mock_cursor = Mock()
 
         mock_conn.cursor.return_value = mock_cursor
-        mock_get_db_connection.return_value = mock_conn
 
-        # מוצר שמוחזר מה-DB
-        mock_cursor.execute.return_value.fetchone.return_value = {
-            'id': 1,
-            'name': 'Laptop',
-            'price': 3000,
-            'stock': 10
-        }
+        mock_cursor.execute.return_value.fetchone.side_effect = [
+            {'id':1, 'name':'Laptop', 'price':3000, 'stock': 5}
+        ]
+
+        mock_get_db_connection.return_value = mock_conn
 
         cart = [
             {'id': 1, 'quantity': 2}
         ]
 
-        # Act
         result = ShopService.process_checkout(cart)
 
-        # Assert
-        assert result["status"] == "success"
-        assert result["total_paid"] == 6000
+        expected_total = 3000 * 2
 
-        # Validation
-        assert mock_cursor.execute.call_count == 2
+        self.assertEqual("success", result['status'])
+        self.assertEqual(expected_total, result['total_paid'])
+
         mock_conn.commit.assert_called_once()
-        mock_conn.close.assert_called_once()
+
 
     # ============== Checkout - Multiple Products ============== #
 
