@@ -308,3 +308,71 @@ class TestShopService(TestCase):
         # Validation
         mock_conn.commit.assert_called_once()
         mock_conn.close.assert_called_once()
+
+        # ============== Checkout - Zero Quantity ============== #
+
+    @patch("app.services.shop_service.get_db_connection")
+    def test_process_checkout_zero_quantity(self, mock_get_db_connection):
+        mock_conn = Mock()
+        mock_cursor = Mock()
+
+        # חשוב מאוד
+        mock_conn.cursor.return_value = mock_cursor
+
+        mock_cursor.execute.return_value.fetchone.return_value = {
+            'id': 1,
+            'name': 'Monitor',
+            'price': 1000,
+            'stock': 10
+        }
+
+        mock_get_db_connection.return_value = mock_conn
+
+        cart = [
+            {'id': 1, 'quantity': 0}
+        ]
+
+        result = ShopService.process_checkout(cart)
+
+        self.assertEqual("success", result['status'])
+        self.assertEqual(0, result['total_paid'])
+
+        mock_cursor.execute.assert_any_call(
+            "UPDATE products SET stock = ? WHERE id = ?",
+            (10, 1)
+        )
+
+
+        # ============== Checkout - Negative Quantity ============== #
+
+    @patch("app.services.shop_service.get_db_connection")
+    def test_process_checkout_negative_quantity(self, mock_get_db_connection):
+        mock_conn = Mock()
+        mock_cursor = Mock()
+
+        # חובה
+        mock_conn.cursor.return_value = mock_cursor
+
+        mock_cursor.execute.return_value.fetchone.return_value = {
+            'id': 1,
+            'name': 'TV',
+            'price': 2500,
+            'stock': 10
+        }
+
+        mock_get_db_connection.return_value = mock_conn
+
+        cart = [
+            {'id': 1, 'quantity': -2}
+        ]
+
+        result = ShopService.process_checkout(cart)
+
+        # BUG: total becomes negative
+        self.assertEqual(-5000, result['total_paid'])
+
+        # BUG: stock increases
+        mock_cursor.execute.assert_any_call(
+            "UPDATE products SET stock = ? WHERE id = ?",
+            (12, 1)
+        )
