@@ -86,6 +86,7 @@ class TestShopService(TestCase):
 
         mock_conn.close.assert_called_once()
 
+
     @patch("app.services.shop_service.get_db_connection")
     def test_get_all_products_db_error(self, mock_get_db_connection: Mock):
         mock_conn = Mock()
